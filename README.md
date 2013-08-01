@@ -127,3 +127,8 @@ If you are using Simple Message Queue for background processing on a single site
 If you are using Simple Message Queue for background processing between sites you will need to take a few additional steps. You will need to create a model in each application that extends SimpleMessageQueue. Next, both of these models will need to have the same queue_name. You can do this with careful naming, or define the queue_name method as described above and give them the same name (recommended). 
 
 **Note:** If you have multiple models receiving messages from the same queue, there is no guarantee which model will receive which message. This is why it is best to only have a single model (on a single site) receiving messages from a specific queue. If you need multiple queues, simply create multiple models with different queue_names.
+
+## Contributing
+
+In order to contribute to this gem, please submit a pull request with passing tests. 
+In order to test locally, you will need to rename lib/config.yml.sample to lib/config.yml and add in your AWS access_key_id and secret_access_key.
