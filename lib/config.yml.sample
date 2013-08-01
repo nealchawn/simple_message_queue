@@ -1,0 +1,4 @@
+# For development purposes (running tests) add your AWS access_key_id and secret_access_key below, and rename this file config.yml
+AWS:
+  access_key_id: 'access_key_id'
+  secret_access_key: 'secret_access_key'
