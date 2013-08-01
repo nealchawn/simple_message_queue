@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.version     = SimpleMessageQueue::VERSION
   s.authors     = ["Jim Smith"]
   s.email       = ["jim@jimsmithdesign.com"]
-  s.homepage    = "TODO"
+  s.homepage    = "https://github.com/cbi/simple_message_queue"
   s.summary     = "SimpleMessageQueue"
   s.description = "SimpleMessageQueue is a simple interface for Amazon Web Service's SQS."
 
