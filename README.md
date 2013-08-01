@@ -26,7 +26,6 @@ SimpleMessageQueue.configure do |config|
   config.idle_timeout = 10                                  # optional
   config.wait_time_seconds = 20                             # optional
   config.logger = Logger.new('simple_message_queue.log')    # optional
-  config.delay_between_polls = 60*30                        # optional
 end
 ```
 
@@ -64,7 +63,7 @@ In order to send a message with Simple Message Queue, simply call the following:
 TestQueue.send('my_string')
 ```
 
-You can send anything you would like to the queue, but it must be a string. You can send a simple message, or you can send the json representation of an object. What you send is completely up to you.
+You can send anything you would like to the queue, but it must be a string and less than 256 KB (AWS SQS restriction). You can send a simple message, or you can send the json representation of an object. What you send is completely up to you.
 
 #### Receiving Messages
 
