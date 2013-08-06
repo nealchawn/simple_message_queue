@@ -6,12 +6,16 @@ Simple Message Queue can be used by a single application for background job proc
 
 ### Setting up Simple Message Queue
 
-In order to use Simple Message Queue in your application, you must first configure it. In order to configure Simple Message Queue, you must call a configure block and pass at least your AWS access_key_id and secret_access_key:
+In order to use Simple Message Queue in your application, you must first configure it. In order to configure Simple Message Queue, you must call a configure block and pass at least your AWS access_key_id and secret_access_key as well as the environment.
+
+The environment variable is used to name your queues. You don't want to be using the same queue in development as in production, so the environment is required, and will be appended to your queue name (e.g. test_queue_development and test_queue_production). In a rails application you can simply use Rails.env (as shown below). If you are using Sinatra or another framework, you will probably want to use ENV['RACK_ENV'], just make sure that you set ENV['RACK_ENV'] in all of your environments or SimpleMessageQueue will throw errors.
 
 ```ruby
 SimpleMessageQueue.configure do |config|
   config.access_key_id = 'your_access_key_id'
   config.secret_access_key= 'your_secret_access_key'
+  config.environment = Rails.env                      # For Rails applications
+  # config.environment = ENV['RACK_ENV']              # For non-Rails applications
 end
 ```
 
@@ -23,6 +27,7 @@ You can also pass in a few other variables to the configure block such as an idl
 SimpleMessageQueue.configure do |config|
   config.access_key_id = 'your_access_key_id'
   config.secret_access_key= 'your_secret_access_key'
+  config.environment = Rails.env
   config.idle_timeout = 10                                  # optional
   config.wait_time_seconds = 20                             # optional
   config.logger = Logger.new('simple_message_queue.log')    # optional
@@ -43,17 +48,20 @@ end
 
 #### Queue Naming
 
-By default, your SQS queue will be named after the model you created (e.g. TestQueue will have a queue named test_queue). You can overwrite this in your model by adding a queue_name method to the class:
+By default, your SQS queue will be named after the model you created and appended with the environment name (e.g. TestQueue in development will have a queue named test_queue_development). You can overwrite this in your model by adding a @queue_name variable to the class:
 
 ```ruby
 class TestQueue
   extend SimpleMessageQueue
 
-  def self.queue_name
-    'my_new_queue_name'
-  end
+  @queue_name = 'super_awesome_queue'
 end
 ```
+
+This will generate a queue with the name of super_awesome_queue_development in your development environment. 
+
+**NOTE:** To prevent the same queue being used in multiple environments (which could wreak havoc with your application), the environment name is always appended to the queue_name. Although you can overwrite the queue_name method, this is a very, very bad idea (BUT if you do, please take multiple environments into account).
+
 
 #### Sending Messages
 
@@ -126,6 +134,7 @@ If you are using Simple Message Queue for background processing on a single site
 If you are using Simple Message Queue for background processing between sites you will need to take a few additional steps. You will need to create a model in each application that extends SimpleMessageQueue. Next, both of these models will need to have the same queue_name. You can do this with careful naming, or define the queue_name method as described above and give them the same name (recommended). 
 
 **Note:** If you have multiple models receiving messages from the same queue, there is no guarantee which model will receive which message. This is why it is best to only have a single model (on a single site) receiving messages from a specific queue. If you need multiple queues, simply create multiple models with different queue_names.
+
 
 ## Contributing
 

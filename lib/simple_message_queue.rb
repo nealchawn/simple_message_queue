@@ -17,11 +17,17 @@ module SimpleMessageQueue
 
   def sqs
     raise SimpleMessageQueue::ConfigurationError unless SimpleMessageQueue.configuration
+    raise SimpleMessageQueue::EnvironmentError unless environment_defined?
     @@sqs ||= AWS::SQS.new(:access_key_id => SimpleMessageQueue.configuration.access_key_id, :secret_access_key => SimpleMessageQueue.configuration.secret_access_key)
   end
 
   def queue_name
-    name.underscore.gsub('/', '_')
+    raise SimpleMessageQueue::EnvironmentError unless environment_defined?
+    if @queue_name
+      @queue_name + "_#{SimpleMessageQueue.configuration.environment}"
+    else
+      name.underscore.gsub('/', '_') + "_#{SimpleMessageQueue.configuration.environment}"
+    end
   end
 
   def queue
@@ -69,5 +75,11 @@ module SimpleMessageQueue
   def process_message(message)
     raise SimpleMessageQueue::NotImplementedError.new(name)
   end
+
+  protected
+
+    def environment_defined?
+      defined?(SimpleMessageQueue.configuration.environment)
+    end
 
 end

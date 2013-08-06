@@ -31,6 +31,10 @@ describe SimpleMessageQueue do
     extend SimpleMessageQueue
   end
 
+  class DummyQueueToOverwriteQueueName
+    extend SimpleMessageQueue
+  end
+
 
   describe 'configuration is empty' do
     before do
@@ -43,13 +47,17 @@ describe SimpleMessageQueue do
       proc { DummyQueue.sqs }.must_raise SimpleMessageQueue::ConfigurationError
     end
 
+    it 'should raise SimpleMessageQueue::EnvironmentError without a valid environment' do
+      proc { DummyQueue.queue_name }.must_raise SimpleMessageQueue::EnvironmentError
+    end
+
   end
 
   describe 'configuration is not empty' do
     before do
       unless SimpleMessageQueue.configuration
         c = YAML::load_file(File.join(File.dirname(File.expand_path(__FILE__)), '../lib/config.yml'))
-        SimpleMessageQueue.configure { |config| config.access_key_id = c['AWS']['access_key_id']; config.secret_access_key= c['AWS']['secret_access_key'] }
+        SimpleMessageQueue.configure { |config| config.access_key_id = c['AWS']['access_key_id']; config.secret_access_key= c['AWS']['secret_access_key']; config.environment = 'test' }
       end
     end
 
@@ -72,7 +80,15 @@ describe SimpleMessageQueue do
 
     it 'should generate the correct queue_name' do
       queue_name = DummyQueue.queue_name
-      queue_name.must_equal 'dummy_queue'
+      queue_name.must_equal 'dummy_queue_test'
+    end
+
+    it 'should allow you to overwrite the queue_name' do
+      DummyQueueToOverwriteQueueName.class_eval do
+        @queue_name = 'new_queue_name'
+      end
+      queue_name = DummyQueueToOverwriteQueueName.queue_name
+      queue_name.must_equal 'new_queue_name_test'
     end
 
     it 'should return a queue' do
@@ -133,6 +149,7 @@ describe SimpleMessageQueue do
     DummyQueueWithProcessMessage.delete_queue if DummyQueueWithProcessMessage.exists?
     DummyQueueToDelete.delete_queue if DummyQueueToDelete.exists?
     DummyQueueToCreateQueue.delete_queue if DummyQueueToCreateQueue.exists?
+    DummyQueueToOverwriteQueueName.delete_queue if DummyQueueToOverwriteQueueName.exists?
     File.delete('dummy_queue.log') if File.exist?('dummy_queue.log')
     File.delete('dummy_queue_with_process_message.log') if File.exist?('dummy_queue_with_process_message.log')
     puts $debug_info
