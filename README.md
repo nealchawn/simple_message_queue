@@ -25,12 +25,14 @@ You can also pass in a few other variables to the configure block such as an idl
 
 ```ruby
 SimpleMessageQueue.configure do |config|
-  config.access_key_id = 'your_access_key_id'
-  config.secret_access_key= 'your_secret_access_key'
-  config.environment = Rails.env
-  config.idle_timeout = 10                                  # optional
-  config.wait_time_seconds = 20                             # optional
-  config.logger = Logger.new('simple_message_queue.log')    # optional
+  config.access_key_id = 'your_access_key_id'               # String                                              (required)
+  config.secret_access_key= 'your_secret_access_key'        # String                                              (required)
+  config.environment = Rails.env                            # String                                              (required)
+  config.idle_timeout = 10                                  # Integer                                             (optional)
+  config.wait_time_seconds = 20                             # Integer                                             (optional)
+  config.logger = Logger.new('simple_message_queue.log')    # Logger                                              (optional)
+  config.sns_notifications = true                           # Boolean                                             (optional)
+  config.sns_notification_prefix = 'my_prefix'              # String (alphanumeric, hyphen and underscore only)   (optional)
 end
 ```
 
@@ -54,7 +56,7 @@ By default, your SQS queue will be named after the model you created and appende
 class TestQueue
   extend SimpleMessageQueue
 
-  @queue_name = 'super_awesome_queue'
+  @queue_name = 'super_awesome_queue'                       # String (alphanumeric, hyphen and underscore only)   (optional)
 end
 ```
 
@@ -124,6 +126,26 @@ end
 This is the default [name]_daemon.rb file generated, with out code placed in the while($running) block. You can now access all of the rake tasks associated with the daemon (refer to the daemon-rails github page for these rake tasks).
 
 **NOTE:** You will want to monitor these daemons and have something to restart them if they stop. Something like God (http://godrb.com/) or Monit (http://mmonit.com/monit/) will work nicely.
+
+### SNS Notifications
+
+Simple Message Queue allows you to send notifications via Amazon's SNS. Notifications will be sent when your queue fails to send a message.
+
+In order to set up notifications, add sns_notifications = true to your config. If you would like to prefix your queues with a name, add sns_notification_prefix = 'prefix'.
+
+```ruby
+SimpleMessageQueue.configure do |config|
+  ...
+  config.sns_notifications = true
+  config.sns_notification_prefix = 'my_prefix'
+end
+```
+
+After the configure block is parsed (usually during initialization), the SNS Topics are automatically created, allowing you to subscribe to those topics before a message is ever sent. 
+
+**Note:** Although the SNS Topics are created automatically, and messages will be sent to those topics, you will not receive any notifications until you create subscriptions to those topics. After your topics have been created, log into your AWS account and navigate to the SNS page. For each topic here, you will need to create at least one subscription in order to receive notifications.
+
+**Note:** SNS Topics are created for each environment (similar to the queues). You will need to subscribe to the topics after each environment is initialized in order to make sure you receive messages for each environment. You can also set up different subscriptions for each environment (e.g. maybe you only want to receive email notifications in development, but would like to receive email and SMS in production).
 
 ### Single Site Communication
 

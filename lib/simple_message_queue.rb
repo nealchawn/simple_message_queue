@@ -1,6 +1,7 @@
 require 'simple_message_queue/configuration'
 require 'simple_message_queue/core_ext/string'
 require 'simple_message_queue/errors'
+require 'simple_message_queue/notification'
 require 'aws'
 
 module SimpleMessageQueue
@@ -11,6 +12,14 @@ module SimpleMessageQueue
     def configure
       self.configuration ||= Configuration.new
       yield(configuration)
+
+      if self.configuration.sns_notifications
+        topics = ['send_message_failure']
+        topics.each do |topic|
+          SimpleMessageQueue::Notification::Topic.new(topic)
+        end
+      end
+
     end
 
   end
@@ -51,12 +60,21 @@ module SimpleMessageQueue
   end
 
   def send(message)
-    queue.send_message(message)
+    begin
+      queue.send_message(message)
+    rescue
+      logger.error "There was an error when sending an item to #{queue_name} at #{DateTime.now}."
+
+      if defined?(SimpleMessageQueue.configuration.sns_notifications) && SimpleMessageQueue.configuration.sns_notifications == true
+        topic = SimpleMessageQueue::Notification::Topic.new('send_message_failure')
+        topic.send("There was an error when sending an item to #{queue_name} at #{DateTime.now}.", "SimpleMessageQueue: Send Message Failure")
+      end
+    end
   end
 
   def logger
     if SimpleMessageQueue.configuration.logger
-      @logger ||= SimpleMessageQueue.configuration.logger
+      @logger = SimpleMessageQueue.configuration.logger
     else
       @logger ||= Logger.new(STDOUT)
     end
