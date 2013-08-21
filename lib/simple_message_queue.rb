@@ -62,12 +62,12 @@ module SimpleMessageQueue
   def send(message)
     begin
       queue.send_message(message)
-    rescue
-      logger.error "There was an error when sending an item to #{queue_name} at #{DateTime.now}."
+    rescue => error
+      logger.error "There was an error when sending an item to #{queue_name} at #{DateTime.now}. Error: #{error.to_s}"
 
       if defined?(SimpleMessageQueue.configuration.sns_notifications) && SimpleMessageQueue.configuration.sns_notifications == true
         topic = SimpleMessageQueue::Notification::Topic.new('send_message_failure')
-        topic.send("There was an error when sending an item to #{queue_name} at #{DateTime.now}.", "SimpleMessageQueue: Send Message Failure")
+        topic.send("There was an error when sending an item to #{queue_name} at #{DateTime.now}. Error: #{error.to_s}", "SimpleMessageQueue: Send Message Failure")
       end
     end
   end
