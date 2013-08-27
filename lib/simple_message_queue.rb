@@ -59,9 +59,9 @@ module SimpleMessageQueue
     false
   end
 
-  def send(message)
+  def send(message, options={})
     begin
-      queue.send_message(message)
+      queue.send_message(message, options)
     rescue => error
       logger.error "There was an error when sending an item to #{queue_name} at #{DateTime.now}. Error: #{error.to_s}"
 
