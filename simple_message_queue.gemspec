@@ -14,7 +14,7 @@ Gem::Specification.new do |s|
   s.description = "SimpleMessageQueue is a simple interface for Amazon Web Service's SQS."
   s.license     = 'MIT'
 
-  s.files = Dir["{app,config,db,lib}/**/*"] + ["README.md"]
+  s.files = Dir["{app,config,db,lib}/**/*"] + ["README.md"] + ["simple_message_queue.gemspec"]
   s.test_files = Dir["test/**/*"]
 
   s.add_dependency 'aws-sdk'
