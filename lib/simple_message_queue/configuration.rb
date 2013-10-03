@@ -1,6 +1,6 @@
 module SimpleMessageQueue
   class Configuration
-    attr_accessor :access_key_id, :secret_access_key, :logger, :idle_timeout, :wait_time_seconds, :environment, :sns_notifications, :sns_notification_prefix
+    attr_accessor :access_key_id, :secret_access_key, :logger, :idle_timeout, :wait_time_seconds, :environment, :sns_notifications, :sns_notification_prefix, :debug
 
     def initialize
       @access_key_id = nil
@@ -11,6 +11,7 @@ module SimpleMessageQueue
       @environment = nil
       @sns_notifications = false
       @sns_notification_prefix = nil
+      @debug = false
     end
   end
 end

@@ -33,6 +33,7 @@ SimpleMessageQueue.configure do |config|
   config.logger = Logger.new('simple_message_queue.log')    # Logger                                              (optional)
   config.sns_notifications = true                           # Boolean                                             (optional)
   config.sns_notification_prefix = 'my_prefix'              # String (alphanumeric, hyphen and underscore only)   (optional)
+  config.debug = false                                      # Boolean                                             (optional)
 end
 ```
 

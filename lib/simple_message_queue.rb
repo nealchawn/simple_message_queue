@@ -82,8 +82,10 @@ module SimpleMessageQueue
 
   def receive
     @count = 0
-    logger.info "Receiving messages for #{queue_name} at #{DateTime.now}"
+    logger.info "Receiving messages for #{queue_name} at #{DateTime.now}" if SimpleMessageQueue.configuration.debug
     queue.poll(:idle_timeout => SimpleMessageQueue.configuration.idle_timeout, :wait_time_seconds => SimpleMessageQueue.configuration.wait_time_seconds) do |message|
+      logger.info "Message received for #{queue_name}"
+      logger.info "Message body: #{message.body}"
       @count += 1
       process_message(message)
     end
