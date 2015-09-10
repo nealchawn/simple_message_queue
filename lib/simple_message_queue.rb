@@ -2,7 +2,7 @@ require 'simple_message_queue/configuration'
 require 'simple_message_queue/core_ext/string'
 require 'simple_message_queue/errors'
 require 'simple_message_queue/notification'
-require 'aws-sdk'
+require 'aws-sdk-v1'
 
 module SimpleMessageQueue
   class << self

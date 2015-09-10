@@ -17,6 +17,6 @@ Gem::Specification.new do |s|
   s.files = Dir["{app,config,db,lib}/**/*"] + ["README.md"] + ["simple_message_queue.gemspec"]
   s.test_files = Dir["test/**/*"]
 
-  s.add_dependency 'aws-sdk'
+  s.add_dependency 'aws-sdk-v1'
   s.add_dependency 'minitest'
 end
