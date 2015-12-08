@@ -148,6 +148,22 @@ After the configure block is parsed (usually during initialization), the SNS Top
 
 **Note:** SNS Topics are created for each environment (similar to the queues). You will need to subscribe to the topics after each environment is initialized in order to make sure you receive messages for each environment. You can also set up different subscriptions for each environment (e.g. maybe you only want to receive email notifications in development, but would like to receive email and SMS in production).
 
+### Logging Messages in Database
+If you would like to automatically log your messages into a database table, you can do so by configuring the name of the ActiveRecord model that you would like to use.
+
+```ruby
+SimpleMessageQueue.configure do |config|
+  ...
+  config.db_logger = 'MyClassName'
+end
+```
+ 
+The class name you pass in must include the following columns:
+- queue_name: string
+- action: string
+- message: text
+- error: string
+
 ### Single Site Communication
 
 If you are using Simple Message Queue for background processing on a single site, all you need to do is create your model and extend SimpleMessageQueue. You will then be able to call the send and receive methods on that model.
