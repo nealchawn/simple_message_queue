@@ -61,9 +61,9 @@ module SimpleMessageQueue
 
   def send(message, options={})
     error_msg = nil
-
+    response = nil
     begin
-      queue.send_message(message, options)
+      response = queue.send_message(message, options)
     rescue => error
       error_msg = error.to_s
       full_error_msg = "There was an error when sending an item to #{queue_name} at #{DateTime.now}. Error: #{error_msg}"
@@ -71,7 +71,7 @@ module SimpleMessageQueue
 
       if defined?(SimpleMessageQueue.configuration.sns_notifications) && SimpleMessageQueue.configuration.sns_notifications == true
         topic = SimpleMessageQueue::Notification::Topic.new('send_message_failure')
-        topic.send(full_error_msg, "SimpleMessageQueue: Send Message Failure")
+        response = topic.send(full_error_msg, "SimpleMessageQueue: Send Message Failure")
       end
     end
 
@@ -79,6 +79,7 @@ module SimpleMessageQueue
       db_logger = Object.const_get SimpleMessageQueue.configuration.db_logger
       db_logger.create(queue_name: queue_name, action: "send", message: message, error: error_msg)
     end
+    return response
   end
 
   def logger
@@ -99,6 +100,7 @@ module SimpleMessageQueue
     end
 
     if db_logger_defined?
+      puts "db_logger"
       db_logger = Object.const_get SimpleMessageQueue.configuration.db_logger
       db_logger.create(queue_name: queue_name, action: "receive", message: message.body)
     end

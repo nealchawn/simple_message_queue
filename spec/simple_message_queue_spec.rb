@@ -50,7 +50,6 @@ describe SimpleMessageQueue do
     it 'should raise SimpleMessageQueue::EnvironmentError without a valid environment' do
       proc { DummyQueue.queue_name }.must_raise SimpleMessageQueue::EnvironmentError
     end
-
   end
 
   describe 'configuration is not empty' do
@@ -105,7 +104,7 @@ describe SimpleMessageQueue do
       DummyQueueToDelete.exists?.must_equal false, "[Note:] Every once and a while this test will fail. This is due to AWS's latency. Since we delete the queue and then test for it's existence directly afterwards, it MAY still appear to exists for up to 60 seconds, resulting in the test failing"
     end
 
-    it 'should send a message to the queue' do
+    it 'should_send_a_message_to the queue' do
       original_count = DummyQueue.count
       sent_message = DummyQueue.send('test')
 
@@ -211,11 +210,8 @@ describe SimpleMessageQueue do
         response.must_be_kind_of AWS::Core::Response
         response.message_id.wont_be_nil
       end
-
     end
-
   end
-
   
   MiniTest.after_run do
     # Clean up queues created for tests
