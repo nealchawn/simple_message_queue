@@ -119,7 +119,7 @@ module SimpleMessageQueue
     end
 
     def db_logger_set?
-      SimpleMessageQueue.configuration.db_logger.blank?
+      !SimpleMessageQueue.configuration.db_logger.blank?
     end
 
 end
