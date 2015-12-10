@@ -98,7 +98,6 @@ module SimpleMessageQueue
       @count += 1
 
       if db_logger_set?
-        puts "db_logger"
         db_logger = Object.const_get SimpleMessageQueue.configuration.db_logger
         db_logger.create(queue_name: queue_name, action: "receive", message: message.body)
       end
