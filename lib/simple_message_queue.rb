@@ -75,7 +75,7 @@ module SimpleMessageQueue
       end
     end
 
-    if db_logger_defined?
+    if db_logger_set?
       db_logger = Object.const_get SimpleMessageQueue.configuration.db_logger
       db_logger.create(queue_name: queue_name, action: "send", message: message, error: error_msg)
     end
@@ -96,14 +96,16 @@ module SimpleMessageQueue
       logger.info "Message received for #{queue_name}" if SimpleMessageQueue.configuration.debug
       logger.info "Message body: #{message.body}" if SimpleMessageQueue.configuration.debug
       @count += 1
+
+      if db_logger_set?
+        puts "db_logger"
+        db_logger = Object.const_get SimpleMessageQueue.configuration.db_logger
+        db_logger.create(queue_name: queue_name, action: "receive", message: message.body)
+      end
+
       process_message(message)
     end
 
-    if db_logger_defined?
-      puts "db_logger"
-      db_logger = Object.const_get SimpleMessageQueue.configuration.db_logger
-      db_logger.create(queue_name: queue_name, action: "receive", message: message.body)
-    end
     @count
   end
 
@@ -117,8 +119,8 @@ module SimpleMessageQueue
       defined?(SimpleMessageQueue.configuration.environment)
     end
 
-    def db_logger_defined?
-      defined?(SimpleMessageQueue.configuration.db_logger)
+    def db_logger_set?
+      SimpleMessageQueue.configuration.db_logger.blank?
     end
 
 end
