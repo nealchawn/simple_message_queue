@@ -5,6 +5,12 @@ Simple Message Queue is a gem to create and receive messages from AWS's SQS. You
 Simple Message Queue can be used by a single application for background job processing (e.g. sending emails in the background), or by multiple applications to communicate with each other (e.g. sending data between applications).
 
 # Clone and Fork from Chawn
+# Clone and Fork from Chawn
+# Clone and Fork from Chawn
+# Clone and Fork from Chawn
+# Clone and Fork from Chawn
+# Clone and Fork from Chawn
+# Clone and Fork from Chawn
 
 ### Setting up Simple Message Queue
 
